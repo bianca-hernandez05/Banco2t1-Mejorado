@@ -29,22 +29,37 @@ namespace BancoSimple2T1
         //una nueva cuenta a un cliente en especifico
         private void btnAceptar_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtNumeroCuenta.Text))
+            try
             {
-                MessageBox.Show("El numero de cuenta es requerido");
-                return;
+                if (string.IsNullOrWhiteSpace(txtNumeroCuenta.Text))
+                {
+                    MessageBox.Show("El número de cuenta es requerido", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                NuevaCuenta = new Cuenta
+                {
+                    NumeroCuenta = txtNumeroCuenta.Text,
+                    Saldo = numSaldoInicial.Value,
+                    ClienteId = _clienteId,
+                    Activa = true
+                };
+
+                DialogResult = DialogResult.OK;
+                Close();
             }
-
-            NuevaCuenta = new Cuenta
+            catch (FormatException ex)
             {
-                NumeroCuenta = txtNumeroCuenta.Text,
-                Saldo = numSaldoInicial.Value,
-                ClienteId = _clienteId,
-                Activa = true
-            };
-
-            DialogResult = DialogResult.OK;
-            Close();
+                MessageBox.Show("Formato inválido: " + ex.Message, "Error de formato", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show("Operación inválida: " + ex.Message, "Error de operación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ha ocurrido un error inesperado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         
