@@ -39,9 +39,10 @@
             // label1
             // 
             label1.AutoSize = true;
+            label1.Font = new Font("Times New Roman", 11.25F, FontStyle.Bold);
             label1.Location = new Point(22, 10);
             label1.Name = "label1";
-            label1.Size = new Size(51, 15);
+            label1.Size = new Size(61, 17);
             label1.TabIndex = 0;
             label1.Text = "Nombre";
             // 
@@ -55,7 +56,7 @@
             // 
             // btnAceptar
             // 
-            btnAceptar.BackColor = SystemColors.ActiveCaption;
+            btnAceptar.BackColor = SystemColors.ActiveBorder;
             btnAceptar.Font = new Font("Arial", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnAceptar.Location = new Point(12, 104);
             btnAceptar.Margin = new Padding(3, 2, 3, 2);
@@ -77,9 +78,10 @@
             // label2
             // 
             label2.AutoSize = true;
+            label2.Font = new Font("Times New Roman", 11.25F, FontStyle.Bold);
             label2.Location = new Point(22, 54);
             label2.Name = "label2";
-            label2.Size = new Size(79, 15);
+            label2.Size = new Size(96, 17);
             label2.TabIndex = 3;
             label2.Text = "Identificacion";
             // 
@@ -100,7 +102,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ControlLight;
+            BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(368, 214);
             Controls.Add(btnCancelar);
             Controls.Add(txtIdentificacion);
@@ -110,7 +112,7 @@
             Controls.Add(label1);
             Margin = new Padding(3, 2, 3, 2);
             Name = "AgregarClienteForm";
-            Text = "Form2";
+            Text = "Agregar Cliente";
             ResumeLayout(false);
             PerformLayout();
         }

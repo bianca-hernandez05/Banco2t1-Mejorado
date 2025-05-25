@@ -19,7 +19,7 @@ namespace BancoSimple2T1.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server = DESKTOP-QHPU8CM\SQLEXPRESS; database =BancoSimple2T1; trusted_Connection = true; trustservercertificate = true;") ;
+            optionsBuilder.UseSqlServer(@"Server = DANELIA-SIS; database =BancoSimple2T1; trusted_Connection = true; trustservercertificate = true;") ;
 
         }
         //Definicion de filtro global

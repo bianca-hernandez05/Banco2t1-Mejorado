@@ -39,18 +39,20 @@
             // label1
             // 
             label1.AutoSize = true;
+            label1.Font = new Font("Times New Roman", 11.25F, FontStyle.Bold);
             label1.Location = new Point(7, 20);
             label1.Name = "label1";
-            label1.Size = new Size(106, 15);
+            label1.Size = new Size(128, 17);
             label1.TabIndex = 0;
             label1.Text = "Numero de cuenta";
             // 
             // label2
             // 
             label2.AutoSize = true;
+            label2.Font = new Font("Times New Roman", 11.25F, FontStyle.Bold);
             label2.Location = new Point(7, 56);
             label2.Name = "label2";
-            label2.Size = new Size(70, 15);
+            label2.Size = new Size(87, 17);
             label2.TabIndex = 1;
             label2.Text = "Saldo Inicial";
             // 
@@ -72,8 +74,8 @@
             // 
             // btnAceptar
             // 
-            btnAceptar.BackColor = SystemColors.ActiveCaption;
-            btnAceptar.Location = new Point(16, 116);
+            btnAceptar.BackColor = SystemColors.ActiveBorder;
+            btnAceptar.Location = new Point(30, 135);
             btnAceptar.Margin = new Padding(3, 2, 3, 2);
             btnAceptar.Name = "btnAceptar";
             btnAceptar.Size = new Size(272, 32);
@@ -86,7 +88,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ControlLight;
+            BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(331, 206);
             Controls.Add(btnAceptar);
             Controls.Add(numSaldoInicial);
@@ -95,7 +97,7 @@
             Controls.Add(label1);
             Margin = new Padding(3, 2, 3, 2);
             Name = "AgregarCuentaForm";
-            Text = "Form2";
+            Text = "Agregar Cuenta";
             ((System.ComponentModel.ISupportInitialize)numSaldoInicial).EndInit();
             ResumeLayout(false);
             PerformLayout();

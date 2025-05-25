@@ -56,7 +56,7 @@
             // 
             // btnAgregarCliente
             // 
-            btnAgregarCliente.BackColor = SystemColors.ActiveCaption;
+            btnAgregarCliente.BackColor = SystemColors.ActiveBorder;
             btnAgregarCliente.Font = new Font("Arial", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnAgregarCliente.Location = new Point(12, 317);
             btnAgregarCliente.Margin = new Padding(3, 2, 3, 2);
@@ -80,7 +80,7 @@
             // 
             // btnAgregarCuenta
             // 
-            btnAgregarCuenta.BackColor = SystemColors.ActiveCaption;
+            btnAgregarCuenta.BackColor = SystemColors.ActiveBorder;
             btnAgregarCuenta.Font = new Font("Arial", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnAgregarCuenta.Location = new Point(413, 253);
             btnAgregarCuenta.Margin = new Padding(3, 2, 3, 2);
@@ -94,18 +94,20 @@
             // label1
             // 
             label1.AutoSize = true;
+            label1.Font = new Font("Times New Roman", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.Location = new Point(12, 60);
             label1.Name = "label1";
-            label1.Size = new Size(44, 15);
+            label1.Size = new Size(47, 15);
             label1.TabIndex = 4;
             label1.Text = "Cliente";
             // 
             // label2
             // 
             label2.AutoSize = true;
+            label2.Font = new Font("Times New Roman", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label2.Location = new Point(424, 16);
             label2.Name = "label2";
-            label2.Size = new Size(45, 15);
+            label2.Size = new Size(46, 15);
             label2.TabIndex = 5;
             label2.Text = "Cuenta";
             // 
@@ -145,7 +147,7 @@
             // 
             // btnVerTransferencia
             // 
-            btnVerTransferencia.BackColor = Color.FromArgb(192, 192, 255);
+            btnVerTransferencia.BackColor = Color.FromArgb(128, 255, 128);
             btnVerTransferencia.Font = new Font("Arial", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnVerTransferencia.Location = new Point(651, 359);
             btnVerTransferencia.Margin = new Padding(3, 2, 3, 2);
@@ -173,7 +175,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ControlLight;
+            BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(954, 413);
             Controls.Add(btnDesactivar);
             Controls.Add(btnVerTransferencia);
@@ -188,8 +190,7 @@
             Controls.Add(dgvClientes);
             Margin = new Padding(3, 2, 3, 2);
             Name = "Form1";
-            Text = "Form1";
-         
+            Text = "Cliente Y cuentas";
             ((System.ComponentModel.ISupportInitialize)dgvClientes).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvCuentas).EndInit();
             ResumeLayout(false);

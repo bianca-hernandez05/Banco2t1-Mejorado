@@ -47,12 +47,12 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ControlLight;
+            BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(610, 338);
             Controls.Add(dgvTransferencias);
             Margin = new Padding(3, 2, 3, 2);
             Name = "VerTransferenciaForms";
-            Text = "Form2";
+            Text = "Transferencia Cliente";
             Load += VerTransferenciaForms_Load;
             ((System.ComponentModel.ISupportInitialize)dgvTransferencias).EndInit();
             ResumeLayout(false);

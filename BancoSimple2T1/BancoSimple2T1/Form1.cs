@@ -1,16 +1,17 @@
 using BancoSimple2T1.Data;
 using BancoSimple2T1.Models;
+using BancoSimple2T1.Services;
 using Microsoft.EntityFrameworkCore;
 namespace BancoSimple2T1
     
 {
     public partial class Form1 : Form
     {
-		
-
 		// Instancia de BancoSimpleContext para acceder a la base de datos con _db.
 		private readonly BancoSimpleContext _db = new();
-		public Form1()
+        // Instancia de BancoServices para acceder a los servicios de banco.
+        private BancoServices _servicio = new BancoServices();
+        public Form1()
         {
             InitializeComponent();
             CargarInformacion();
@@ -19,20 +20,8 @@ namespace BancoSimple2T1
         //Metodo para cargar la informacion
         private void CargarInformacion()
         {
-            
-            var cuenta = _db.Cuenta.
-                Include(c => c.cliente).Where(c => c.Activa).
-                Select(c => new
-                {
-                    c.CuentaId,
-                    c.NumeroCuenta,
-                    c.Saldo,
-                    NombreCliente = c.cliente.Nombre,
-                    c.Activa,
-                    c.ClienteId
-                }).ToList();
-			dgvClientes.DataSource = _db.Cliente.ToList();
-			dgvCuentas.DataSource = cuenta;
+            dgvClientes.DataSource = _servicio.ObtenerClientes();
+            dgvCuentas.DataSource = _servicio.ObtenerCuentasActivas();
         }
 
         //Este boton sirve para agregar a cada uno de los clientes
@@ -51,92 +40,52 @@ namespace BancoSimple2T1
         //Este boton sirve para agregar las cuentas de cada cliente
         private void btnAgregarCuenta_Click(object sender, EventArgs e)
         {
-			// CAMBIO: validación usando método nuevo
-			if (!ValidarSeleccion(dgvClientes, 1, "Seleccione un cliente primero"))
-				return;
+            if (!ValidarSeleccion(dgvClientes, 1, "Seleccione un cliente primero"))
+                return;
 
-			// CAMBIO: obtener id usando método nuevo
-			var clienteId = ObtenerIdSeleccionado(dgvClientes, "ClienteId");
+            var clienteId = ObtenerIdSeleccionado(dgvClientes, "ClienteId");
             var form = new AgregarCuentaForm(clienteId);
+
             if (form.ShowDialog() == DialogResult.OK)
             {
-                _db.Cuenta.Add(form.NuevaCuenta);
-				// CAMBIO: reemplazo
-				GuardarYCargar();
-            }
-        }
-
-        //Este metodo sirve para realizar las transaaciones (de dinero)
-        //de la cuenta de un cliente a otra cuenta de otro cliente
-        private void RealizarTransaccion(int cuentaOrigenId, int cuentaDestinoId, decimal monto)
-        {
-
-            using var transferencia = _db.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
-            try
-            {
-                //Filtro y ordenacion
-                var cuentaOrigen = _db.Cuenta.FirstOrDefault(c => c.CuentaId == cuentaOrigenId);
-                var cuentaDestino = _db.Cuenta.FirstOrDefault(c => c.CuentaId == cuentaDestinoId);
-
-                //Aqui se verifica si la cantidad del monnto de x cuenta es la adecuada 
-                //para poder transferir a otra cuenta (monto suficiente)
-
-                if (cuentaOrigen == null || cuentaDestino == null)
-                    throw new Exception("Una o ambas cuentas no existen");
-
-                if (!cuentaOrigen.Activa || !cuentaDestino.Activa)
-                    throw new Exception("Una o ambas cuentas están inactivas");
-                if (cuentaOrigen.Saldo < monto)
-                    throw new Exception("Saldo Insuficiente en la cuenta Origen");
-
-                cuentaOrigen.Saldo -= monto;
-                cuentaDestino.Saldo += monto;
-
-                //Aqui se registra la transaccion
-                _db.Transacciones.Add(new Transaccion
+                try
                 {
-                    Monto = monto,
-                    Fecha = DateTime.Now,
-                    Descripcion = "Transferencia entre cuentas",
-                    CuentaOrigenId = cuentaOrigenId,
-                    CuentaDestinoId = cuentaDestinoId
-                });
-
-                _db.SaveChanges();
-
-                //Aqui esta completada la Transaccion 
-                transferencia.Commit();
-                MessageBox.Show("Transferencia realizada");
-                CargarInformacion();
-
-
+                    _servicio.AgregarCuenta(form.NuevaCuenta);
+                    MessageBox.Show("Cuenta agregada con éxito.");
+                    CargarInformacion();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al agregar cuenta: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                transferencia.Rollback();
-
-                var inner = ex.InnerException?.Message ?? "No hay InnerException";
-                MessageBox.Show($"Error al guardar:\n{ex.Message}\n\nDetalle:\n{inner}");
-            }
-
         }
+
+      
 
         //Este boton sirve para transferir el dinero de una cuenta a otra
         //teniendo en cuenta las dos cuentas seleccionadas
         private void btnTransferencia_Click(object sender, EventArgs e)
         {
-			// CAMBIO: validar selección con método
-			if (!ValidarSeleccion(dgvCuentas, 2, "Seleccione exactamente 2 cuentas"))
-				return;
+            if (!ValidarSeleccion(dgvCuentas, 2, "Seleccione exactamente 2 cuentas"))
+                return;
 
-			// CAMBIO: uso método sobrecargado para fila 1 y fila 0
-			var cuentaOrigenId = ObtenerIdSeleccionado(dgvCuentas, "CuentaId", indexFila: 1);
-			var cuentaDestinoId = ObtenerIdSeleccionado(dgvCuentas, "CuentaId", indexFila: 0);
+            var cuentaOrigenId = ObtenerIdSeleccionado(dgvCuentas, "CuentaId", indexFila: 1);
+            var cuentaDestinoId = ObtenerIdSeleccionado(dgvCuentas, "CuentaId", indexFila: 0);
 
-			var form = new TransaccionesForms(cuentaOrigenId, cuentaDestinoId);
+            var form = new TransaccionesForms(cuentaOrigenId, cuentaDestinoId);
             if (form.ShowDialog() == DialogResult.OK)
             {
-                RealizarTransaccion(cuentaOrigenId, cuentaDestinoId, form.Monto);
+                try
+                {
+                    _servicio.RealizarTransferencia(cuentaOrigenId, cuentaDestinoId, form.Monto);
+                    MessageBox.Show("Transferencia realizada con éxito.");
+                    CargarInformacion(); // Recarga después de cambios
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error: {ex.Message}");
+                }
             }
 
         }
@@ -145,18 +94,21 @@ namespace BancoSimple2T1
         //y que talvez ya no la usara
         private void btnDesactivar_Click(object sender, EventArgs e)
         {
-			// CAMBIO: validar selección con método
-			if (!ValidarSeleccion(dgvCuentas, 1, "Seleccione solo una cuenta exactamente"))
-				return;
+            if (!ValidarSeleccion(dgvCuentas, 1, "Seleccione solo una cuenta exactamente"))
+                return;
 
-			else
+            var cuentaId = ObtenerIdSeleccionado(dgvCuentas, "CuentaId");
+
+            try
             {
-                var cuentaId = (int)dgvCuentas.SelectedRows[0].Cells["CuentaId"].Value;
-                var cuenta = _db.Cuenta.Find(cuentaId);
-                cuenta.Activa = false;
-				// CAMBIO: guardar y recargar con método
-				GuardarYCargar();
-			}
+                _servicio.DesactivarCuenta(cuentaId);
+                MessageBox.Show("Cuenta desactivada correctamente.");
+                CargarInformacion();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al desactivar cuenta: {ex.Message}");
+            }
         }
 
         //Este boton sirve para buscar el nombre del ciente que se require encontrar
