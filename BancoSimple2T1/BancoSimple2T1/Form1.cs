@@ -6,11 +6,11 @@ namespace BancoSimple2T1
 {
     public partial class Form1 : Form
     {
-        //Creamos una instancia de la clase BancoSimpleContext
-        //para tener acceso a cada una de las clases (Tablas)
+		
 
-        private BancoSimpleContext _db = new BancoSimpleContext();
-        public Form1()
+		// Instancia de BancoSimpleContext para acceder a la base de datos con _db.
+		private readonly BancoSimpleContext _db = new();
+		public Form1()
         {
             InitializeComponent();
             CargarInformacion();
@@ -19,7 +19,7 @@ namespace BancoSimple2T1
         //Metodo para cargar la informacion
         private void CargarInformacion()
         {
-            dgvClientes.DataSource = _db.Cliente.ToList();
+            
             var cuenta = _db.Cuenta.
                 Include(c => c.cliente).Where(c => c.Activa).
                 Select(c => new
@@ -31,7 +31,8 @@ namespace BancoSimple2T1
                     c.Activa,
                     c.ClienteId
                 }).ToList();
-            dgvCuentas.DataSource = cuenta;
+			dgvClientes.DataSource = _db.Cliente.ToList();
+			dgvCuentas.DataSource = cuenta;
         }
 
         //Este boton sirve para agregar a cada uno de los clientes
@@ -50,18 +51,18 @@ namespace BancoSimple2T1
         //Este boton sirve para agregar las cuentas de cada cliente
         private void btnAgregarCuenta_Click(object sender, EventArgs e)
         {
-            if (dgvClientes.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Seleccione un cliente primero");
-                return;
-            }
-            var clienteId = (int)dgvClientes.SelectedRows[0].Cells["ClienteId"].Value;
+			// CAMBIO: validación usando método nuevo
+			if (!ValidarSeleccion(dgvClientes, 1, "Seleccione un cliente primero"))
+				return;
+
+			// CAMBIO: obtener id usando método nuevo
+			var clienteId = ObtenerIdSeleccionado(dgvClientes, "ClienteId");
             var form = new AgregarCuentaForm(clienteId);
             if (form.ShowDialog() == DialogResult.OK)
             {
                 _db.Cuenta.Add(form.NuevaCuenta);
-                _db.SaveChanges();
-                CargarInformacion();
+				// CAMBIO: reemplazo
+				GuardarYCargar();
             }
         }
 
@@ -124,15 +125,15 @@ namespace BancoSimple2T1
         //teniendo en cuenta las dos cuentas seleccionadas
         private void btnTransferencia_Click(object sender, EventArgs e)
         {
-            if (dgvCuentas.SelectedRows.Count != 2)
-            {
-                MessageBox.Show("Seleccione exactamente 2 cuentas");
-                return;
-            }
-            var cuentaOrigenId = (int)dgvCuentas.SelectedRows[1].Cells["CuentaId"].Value;
-            var cuentaDestinoId = (int)dgvCuentas.SelectedRows[0].Cells["CuentaId"].Value;
+			// CAMBIO: validar selección con método
+			if (!ValidarSeleccion(dgvCuentas, 2, "Seleccione exactamente 2 cuentas"))
+				return;
 
-            var form = new TransaccionesForms(cuentaOrigenId, cuentaDestinoId);
+			// CAMBIO: uso método sobrecargado para fila 1 y fila 0
+			var cuentaOrigenId = ObtenerIdSeleccionado(dgvCuentas, "CuentaId", indexFila: 1);
+			var cuentaDestinoId = ObtenerIdSeleccionado(dgvCuentas, "CuentaId", indexFila: 0);
+
+			var form = new TransaccionesForms(cuentaOrigenId, cuentaDestinoId);
             if (form.ShowDialog() == DialogResult.OK)
             {
                 RealizarTransaccion(cuentaOrigenId, cuentaDestinoId, form.Monto);
@@ -144,19 +145,18 @@ namespace BancoSimple2T1
         //y que talvez ya no la usara
         private void btnDesactivar_Click(object sender, EventArgs e)
         {
-            if (dgvCuentas.SelectedRows.Count != 1)
-            {
-                MessageBox.Show("Selecciones solo una cuenta exactamente");
-                return;
-            }
-            else
+			// CAMBIO: validar selección con método
+			if (!ValidarSeleccion(dgvCuentas, 1, "Seleccione solo una cuenta exactamente"))
+				return;
+
+			else
             {
                 var cuentaId = (int)dgvCuentas.SelectedRows[0].Cells["CuentaId"].Value;
                 var cuenta = _db.Cuenta.Find(cuentaId);
                 cuenta.Activa = false;
-                _db.SaveChanges();
-                CargarInformacion();
-            }
+				// CAMBIO: guardar y recargar con método
+				GuardarYCargar();
+			}
         }
 
         //Este boton sirve para buscar el nombre del ciente que se require encontrar
@@ -179,7 +179,36 @@ namespace BancoSimple2T1
             form.ShowDialog();
 
         }
+		// Método para validar la selección en un DataGridView
+		private bool ValidarSeleccion(DataGridView dgv, int cantidadEsperada, string mensajeError)
+		{
+			if (dgv.SelectedRows.Count != cantidadEsperada)
+			{
+				MessageBox.Show(mensajeError);
+				return false;
+			}
+			return true;
+		}
 
-       
-    }
+		// Método para obtener el Id seleccionado en un DataGridView, columna dada
+		private int ObtenerIdSeleccionado(DataGridView dgv, string nombreColumna)
+		{
+			return (int)dgv.SelectedRows[0].Cells[nombreColumna].Value;
+		}
+
+		// Método para guardar cambios y recargar datos
+		private void GuardarYCargar()
+		{
+			_db.SaveChanges();
+			CargarInformacion();
+		}
+
+		// Sobrecarga método ObtenerIdSeleccionado para fila específica
+		private int ObtenerIdSeleccionado(DataGridView dgv, string nombreColumna, int indexFila)
+		{
+			return (int)dgv.SelectedRows[indexFila].Cells[nombreColumna].Value;
+		}
+
+
+	}
 }

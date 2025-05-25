@@ -1,4 +1,5 @@
 ﻿using BancoSimple2T1.Data;
+using BancoSimple2T1.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -42,15 +43,11 @@ namespace BancoSimple2T1
         //teniendo en cuenta losnombres de las personas y el mosto a transferir y a resivir
         private void CargarInformacionCuenta()
         {
-            var cuentaOrigen = db.Cuenta.
-                Include(c => c.cliente).
-                First(c => c.CuentaId == _cuentaOrigenId);
+			// CAMBIO: con el nuevo metodo
+			var cuentaOrigen = ObtenerCuentaConCliente(_cuentaOrigenId);
+			var cuentaDestino = ObtenerCuentaConCliente(_cuentaDestinoId);
 
-            var cuentaDestino = db.Cuenta.
-               Include(c => c.cliente).
-               First(c => c.CuentaId == _cuentaDestinoId);
-
-            lblOrigen.Text = $"Nombre: {cuentaOrigen.cliente.Nombre} cuenta {cuentaOrigen.NumeroCuenta}";
+			lblOrigen.Text = $"Nombre: {cuentaOrigen.cliente.Nombre} cuenta {cuentaOrigen.NumeroCuenta}";
             lblDestino.Text = $"Nombre: {cuentaDestino.cliente.Nombre} cuenta {cuentaDestino.NumeroCuenta}";
             lblDisponible.Text = $"Saldo Disponible : {cuentaOrigen.Saldo:c}";
         }
@@ -77,7 +74,12 @@ namespace BancoSimple2T1
             DialogResult = DialogResult.Cancel;
             Close();
         }
+		// CAMBIO: metodo para obtener la cuenta con su cliente
+		private Cuenta ObtenerCuentaConCliente(int cuentaId)
+		{
+			return db.Cuenta.Include(c => c.cliente).First(c => c.CuentaId == cuentaId);
+		}
 
-        
-    }
+
+	}
 }

@@ -13,10 +13,9 @@ namespace BancoSimple2T1
 {
     public partial class VerTransferenciaForms : Form
     {
-        //Aqui mandamos a llamar a la clase BancoSimpleContext mediante
-        //una instancia para tener conexion mediante el objeto (con)
-        private BancoSimpleContext con = new BancoSimpleContext();
-        public VerTransferenciaForms()
+		// Instancia de BancoSimpleContext para acceder a la base de datos con _db.
+		private readonly BancoSimpleContext _db = new();
+		public VerTransferenciaForms()
         {
             InitializeComponent();
             CargarTransferencias();
@@ -26,7 +25,7 @@ namespace BancoSimple2T1
         //del programa
         private void CargarTransferencias()
         {
-            dgvTransferencias.DataSource = con.Transacciones.ToList();
+            dgvTransferencias.DataSource = _db.Transacciones.ToList();
         }
 
         private void VerTransferenciaForms_Load(object sender, EventArgs e)
