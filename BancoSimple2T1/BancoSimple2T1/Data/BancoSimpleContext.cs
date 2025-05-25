@@ -13,15 +13,25 @@ namespace BancoSimple2T1.Data
         //Aqui se llaman a cada una de las clases que estan dentro de la carpeta Models
         //las cuales representan cada una de las tablas que estan en la base de datos.
 
-        public DbSet <Cliente> Cliente { get; set; }
-        public DbSet <Cuenta> Cuenta { get; set;}
-        public DbSet <Transaccion> Transacciones { get; set;}
+        public DbSet<Cliente> Cliente { get; set; }
+        public DbSet<Cuenta> Cuenta { get; set; }
+        public DbSet<Transaccion> Transacciones { get; set; }
+
+       
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server = LAPTOP-4N0KUFG6\SQLEXPRESS01; database =BancoSimple2T1; trusted_Connection = true; trustservercertificate = true;") ;
+            //Mejora uso de if
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(@"Server = LAPTOPHPMELANY\SQLEXPRESS; database =BancoSimple2M5; trusted_Connection = true; trustservercertificate = true;");
+
+            }
+            
 
         }
+    
         //Definicion de filtro global
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,4 +1,5 @@
-﻿using BancoSimple2T1.Models;
+﻿using BancoSimple2T1.Data;
+using BancoSimple2T1.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,7 +14,9 @@ namespace BancoSimple2T1
 {
     public partial class AgregarClienteForm : Form
     {
+        private BancoSimpleContext _db = new BancoSimpleContext();
         //Aqui llamamos a la clase Cliente para crear un nuevo cliente
+
         public Cliente NuevoCliente { get; private set; }
 
 
@@ -31,13 +34,48 @@ namespace BancoSimple2T1
                 MessageBox.Show("Todos los campos son necesarios");
                 return;
             }
-            NuevoCliente = new Cliente
+
+            //Mejora si ya existe un cliente 
+            if (_db.Cliente.Any(NuevoCliente => NuevoCliente.Identificacion == txtIdentificacion.Text.Trim()))
             {
-                Nombre = txtNombre.Text,
-                Identificacion = txtIdentificacion.Text
-            };
-            DialogResult = DialogResult.OK;
-            Close();
+                MessageBox.Show("Ya existe un cliente con esta identificacion ");
+                txtIdentificacion.Focus();
+                return;
+            }
+            else
+            {
+                NuevoCliente = new Cliente
+                {
+                    Nombre = txtNombre.Text,
+                    Identificacion = txtIdentificacion.Text
+                };
+                DialogResult = DialogResult.OK;
+                Close();
+
+            }
+
+            //Mejora el nombre del cliente
+            if (txtNombre.Text.Length < 3)
+            {
+                MessageBox.Show("El nombre debe tener al menos 3 caracteres");
+                txtNombre.Focus();
+                return;
+
+
+            }
+
+            //Mejora identificacion del cliente 
+            if (txtIdentificacion.Text.Length < 6)
+            {
+                MessageBox.Show("La identificacion debe tener al menos 6 caracteres");
+                txtIdentificacion.Focus();
+                return;
+
+            }
+
+
+
+            
         }
 
         //Este boton se utiliza para cancelar o eliminar

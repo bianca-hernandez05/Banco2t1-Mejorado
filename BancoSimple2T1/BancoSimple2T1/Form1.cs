@@ -20,8 +20,20 @@ namespace BancoSimple2T1
         //Metodo para cargar la informacion
         private void CargarInformacion()
         {
-            dgvClientes.DataSource = _servicio.ObtenerClientes();
-            dgvCuentas.DataSource = _servicio.ObtenerCuentasActivas();
+            //El uso del try, previene que la aplicacion se bloquee si hay un error en la conexion a la base de datos
+            //o un problema con los datos; si lo hay informara del problema al usuario con un mensaje.
+            try
+            {
+                dgvClientes.DataSource = _servicio.ObtenerClientes();
+                dgvCuentas.DataSource = _servicio.ObtenerCuentasActivas();
+
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Error al cargar la informacion: " + ex.Message);
+
+            }
+           
         }
 
         //Este boton sirve para agregar a cada uno de los clientes
@@ -202,7 +214,7 @@ namespace BancoSimple2T1
 
                 if (string.IsNullOrWhiteSpace(patron))
                 {
-                    MessageBox.Show("Por favor, ingrese un término de búsqueda.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Por favor, ingrese al menos una letra del nombre del cliente a buscar.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -212,7 +224,7 @@ namespace BancoSimple2T1
 
                 if (clientes.Count == 0)
                 {
-                    MessageBox.Show("No se encontraron clientes con ese nombre.", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(" Lo siento,No se encontraron clientes con ese nombre.", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     dgvClientes.DataSource = null; // Limpia el grid si no hay resultados
                 }
                 else
